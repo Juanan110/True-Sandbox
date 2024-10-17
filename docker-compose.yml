@@ -1,13 +1,32 @@
 version: '3.8'
-services:
-  backend:
-    build:
-      context: ./backend
-    ports:
-      - "5000:5000"
 
+services:
   frontend:
     build:
       context: ./frontend
     ports:
-      - "3000:3000"
+      - "3000:3000"  # Mapea el puerto 3000 del contenedor al puerto 3000 del host
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "5000:5000"  # Mapea el puerto 5000 del contenedor al puerto 5000 del host
+    environment:
+      DATABASE_URL: postgres://cat_cafe_user:password@db:5432/cat_cafe_db  # Cambia a tu base de datos
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: cat_cafe_db  # Nombre de tu base de datos
+      POSTGRES_USER: cat_cafe_user
+      POSTGRES_PASSWORD: password  # Cambia esta contraseña según sea necesario
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

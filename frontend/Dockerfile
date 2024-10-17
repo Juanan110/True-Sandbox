@@ -1,15 +1,29 @@
 # FRONTEND/DOCKERFILE
-FROM node:22
+FROM node:22 AS build
 
-# Set the working directory
+# Establecer el directorio de trabajo
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package.json ./
+# Copiar package.json y package-lock.json
+COPY package*.json ./
+
+# Instalar dependencias
 RUN npm install
 
-# Copy the rest of the application code
+# Copiar el resto de la aplicación
 COPY . .
 
-# Command to run the application
-CMD ["npm", "start"]
+# Construir la aplicación para producción
+RUN npm run build
+
+# Usar Nginx para servir la aplicación
+FROM nginx:alpine
+
+# Copiar los archivos de construcción al directorio de Nginx
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Exponer el puerto que usará la aplicación
+EXPOSE 80
+
+# Comando para ejecutar Nginx
+CMD ["nginx", "-g", "daemon off;"]

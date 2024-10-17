@@ -1,18 +1,20 @@
 # BACKEND/DOCKERFILE
-FROM python:3.9
+FROM python:3.9-slim
 
-#Working directory
+# Establecer el directorio de trabajo
 WORKDIR /app
 
-#Copy the requirements file
-COPY app/requirements.txt .
+# Copiar el archivo requirements.txt
+COPY requirements.txt .
 
-# Dependencies
-RUN pip install --no-cache-dir -r requirements.txt 
+# Instalar las dependencias
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the aplication code
+# Copiar el resto de la aplicación
+COPY . .
 
-COPY app/ .
+# Exponer el puerto que usará la aplicación
+EXPOSE 5000
 
-# Run the aplication
-CMD ["python", "main.py"]
+# Comando para ejecutar la aplicación
+CMD ["python", "app/routes.py"]
